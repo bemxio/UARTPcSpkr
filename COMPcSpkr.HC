@@ -133,14 +133,14 @@ Bool Blink(F64 Hz=2.5)
   return ToI64(cnts.jiffies*2*Hz/JIFFY_FREQ)&1;
 }
 
-U0 Busy(I64 �S)
+U0 Busy(I64 uS)
 {//Loosely timed.
   I64 i;
   if (cnts.HPET_freq) {
-    i=HPET+cnts.HPET_freq*�S/1000000;
+    i=HPET+cnts.HPET_freq*uS/1000000;
     while (HPET<i);
   } else
-    for (i=0;i<�S;i++)
+    for (i=0;i<uS;i++)
       PortNop;
 }
 
