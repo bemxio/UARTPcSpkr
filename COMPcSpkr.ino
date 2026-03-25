@@ -1,28 +1,26 @@
 #define BUZZER_PIN 8
 #define SERIAL_BAUD 9600
 
+uint16_t frequency;
+
 void setup() {
   pinMode(BUZZER_PIN, OUTPUT);
   Serial.begin(SERIAL_BAUD);
 }
 
 void loop() {
-  if (!Serial.available())
+  if (Serial.available() < 2)
     return;
 
-  uint32_t frequency = Serial.parseInt();
-  uint32_t duration = Serial.parseInt();
+  frequency = Serial.read();
+  frequency |= Serial.read() << 8;
 
-  if (frequency < 31)
-    return;
-
-  //Serial.println("Received beep request!");
-
-  //Serial.print("Frequency: ");
+  //Serial.print("Received beep request! Frequency: ");
   //Serial.println(frequency);
 
-  //Serial.print("Duration: ");
-  //Serial.println(duration);
-
-  tone(BUZZER_PIN, frequency, duration);
+  if (frequency == 0) {
+    noTone(BUZZER_PIN); return;
+  } else if (frequency >= 31) {
+    tone(BUZZER_PIN, frequency);
+  }
 }
