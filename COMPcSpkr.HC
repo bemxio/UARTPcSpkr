@@ -133,14 +133,14 @@ Bool Blink(F64 Hz=2.5)
   return ToI64(cnts.jiffies*2*Hz/JIFFY_FREQ)&1;
 }
 
-U0 Busy(I64 æS)
+U0 Busy(I64 ï¿½S)
 {//Loosely timed.
   I64 i;
   if (cnts.HPET_freq) {
-    i=HPET+cnts.HPET_freq*æS/1000000;
+    i=HPET+cnts.HPET_freq*ï¿½S/1000000;
     while (HPET<i);
   } else
-    for (i=0;i<æS;i++)
+    for (i=0;i<ï¿½S;i++)
       PortNop;
 }
 
@@ -160,6 +160,25 @@ U0 Sleep(I64 mS)
     SleepUntil(cnts.jiffies+mS*JIFFY_FREQ/1000);
 }
 
+#define COM1 0x3f8
+
+U0 COMInit(U32 baud)
+{
+  U16 divisor = 115200 / baud;
+
+  OutU8(COM1 + 1, 0x00); // disable interrupts
+  OutU8(COM1 + 3, 0x80); // enable DLAB
+  OutU8(COM1 + 0, divisor.u8[0]); // divisor low byte
+  OutU8(COM1 + 1, divisor.u8[1]); // divisor high byte
+  OutU8(COM1 + 3, 0x03); // connection parameters (8 bit, no parity, 1 stop bit)
+  OutU8(COM1 + 2, 0x47); // enable and clear FIFO (8 byte threshold)
+  OutU8(COM1 + 4, 0x0B); // enable DTR, RTS & OUT2 pins
+
+  com_init = TRUE;
+}
+
+Bool com_init = FALSE;
+
 F64 Ona2Freq(I8 ona)
 {//Ona to freq. Ona=60 is 440.0Hz.
   if (!ona)
@@ -178,20 +197,22 @@ I8 Freq2Ona(F64 freq)
 
 U0 Snd(I8 ona=0)
 {//Play ona, a piano key num. 0 means rest.
-  I64 period;
+  U16 freq;
   CSndData *d;
+  //"Snd: ona=%d, freq=%d\n", ona, freq;
+  if (!com_init)
+    COMInit(9600);
   if (!Bt(&sys_semas[SEMA_MUTE],0) &&
 	!LBts(&sys_semas[SEMA_SND],0)) { //Mutex. Just throw-out if in use
     if (!ona) {
       scrncast.ona=ona;
-      OutU8(0x61,InU8(0x61)&~3);
+      OutU8(COM1,0x00);
+      OutU8(COM1,0x00);
     } else if (ona!=scrncast.ona) {
       scrncast.ona=ona;
-      period=ClampI64(SYS_TIMER_FREQ/Ona2Freq(ona),1,U16_MAX);
-      OutU8(0x43,0xB6);
-      OutU8(0x42,period);
-      OutU8(0x42,period.u8[1]);
-      OutU8(0x61,3|InU8(0x61));
+      freq=Ona2Freq(ona);
+      OutU8(COM1,freq);
+      OutU8(COM1,freq.u8[1]);
     }
     if (!IsDbgMode && scrncast.record) {
       d=ACAlloc(sizeof(CSndData));
