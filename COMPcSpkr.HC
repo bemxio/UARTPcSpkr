@@ -162,6 +162,8 @@ U0 Sleep(I64 mS)
 
 #define COM1 0x3f8
 
+Bool com_init = FALSE;
+
 U0 COMInit(U32 baud)
 {
   U16 divisor = 115200 / baud;
@@ -176,8 +178,6 @@ U0 COMInit(U32 baud)
 
   com_init = TRUE;
 }
-
-Bool com_init = FALSE;
 
 F64 Ona2Freq(I8 ona)
 {//Ona to freq. Ona=60 is 440.0Hz.
@@ -199,7 +199,7 @@ U0 Snd(I8 ona=0)
 {//Play ona, a piano key num. 0 means rest.
   U16 freq;
   CSndData *d;
-  //"Snd: ona=%d, freq=%d\n", ona, freq;
+  "Snd: ona=%d, freq=%d\n", ona, freq;
   if (!com_init)
     COMInit(9600);
   if (!Bt(&sys_semas[SEMA_MUTE],0) &&
