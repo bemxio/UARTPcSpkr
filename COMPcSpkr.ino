@@ -1,11 +1,11 @@
 #define BUZZER_PIN 8
-#define SERIAL_BAUD 115200
+#define BAUD_RATE 115200
 
 uint16_t frequency;
 
 void setup() {
   pinMode(BUZZER_PIN, OUTPUT);
-  Serial.begin(SERIAL_BAUD);
+  Serial.begin(BAUD_RATE);
 }
 
 void loop() {

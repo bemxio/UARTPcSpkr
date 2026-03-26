@@ -160,24 +160,24 @@ U0 Sleep(I64 mS)
     SleepUntil(cnts.jiffies+mS*JIFFY_FREQ/1000);
 }
 
-#define COM1 0x3f8
+#define COM1 0x3F8
 #define BAUD_RATE 115200
 
-Bool com_init = FALSE;
+Bool com1_init = FALSE;
 
-U0 COMInit(U32 baud)
+U0 COM1Init(U32 baud)
 {//Initialize COM1 with given baud rate.
   U16 divisor = 115200 / baud;
 
   OutU8(COM1 + 1, 0x00); // disable interrupts
   OutU8(COM1 + 3, 0x80); // enable DLAB
-  OutU8(COM1 + 0, divisor.u8[0]); // divisor low byte
+  OutU8(COM1, divisor); // divisor low byte
   OutU8(COM1 + 1, divisor.u8[1]); // divisor high byte
   OutU8(COM1 + 3, 0x03); // connection parameters (8 bit, no parity, 1 stop bit)
   OutU8(COM1 + 2, 0x47); // enable and clear FIFO (8 byte threshold)
   OutU8(COM1 + 4, 0x0B); // enable DTR, RTS & OUT2 pins
 
-  com_init = TRUE;
+  com1_init = TRUE;
 }
 
 F64 Ona2Freq(I8 ona)
@@ -200,20 +200,16 @@ U0 Snd(I8 ona=0)
 {//Play ona, a piano key num. 0 means rest.
   U16 freq;
   CSndData *d;
-  //"Snd: ona=%d, freq=%d\n", ona, freq;
-  if (!com_init)
-    COMInit(BAUD_RATE);
+  if (!com1_init)
+    COM1Init(BAUD_RATE);
   if (!Bt(&sys_semas[SEMA_MUTE],0) &&
 	!LBts(&sys_semas[SEMA_SND],0)) { //Mutex. Just throw-out if in use
-    if (!ona) {
-      scrncast.ona=ona;
-      OutU8(COM1,0x00);
-      OutU8(COM1,0x00);
-    } else if (ona!=scrncast.ona) {
+    if (ona!=scrncast.ona) {
       scrncast.ona=ona;
       freq=Ona2Freq(ona);
       OutU8(COM1,freq);
       OutU8(COM1,freq.u8[1]);
+      //"Snd: ona=%d, freq=%d\n", ona, freq;
     }
     if (!IsDbgMode && scrncast.record) {
       d=ACAlloc(sizeof(CSndData));
