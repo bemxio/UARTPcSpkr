@@ -1,5 +1,5 @@
 #define BUZZER_PIN 8
-#define SERIAL_BAUD 9600
+#define SERIAL_BAUD 115200
 
 uint16_t frequency;
 
@@ -15,8 +15,8 @@ void loop() {
   frequency = Serial.read();
   frequency |= Serial.read() << 8;
 
-  Serial.print("Received beep request! Frequency: ");
-  Serial.println(frequency);
+  //Serial.print("Received beep request! Frequency: ");
+  //Serial.println(frequency);
 
   if (frequency == 0) {
     noTone(BUZZER_PIN); return;

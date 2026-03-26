@@ -161,11 +161,12 @@ U0 Sleep(I64 mS)
 }
 
 #define COM1 0x3f8
+#define BAUD_RATE 115200
 
 Bool com_init = FALSE;
 
 U0 COMInit(U32 baud)
-{
+{//Initialize COM1 with given baud rate.
   U16 divisor = 115200 / baud;
 
   OutU8(COM1 + 1, 0x00); // disable interrupts
@@ -199,9 +200,9 @@ U0 Snd(I8 ona=0)
 {//Play ona, a piano key num. 0 means rest.
   U16 freq;
   CSndData *d;
-  "Snd: ona=%d, freq=%d\n", ona, freq;
+  //"Snd: ona=%d, freq=%d\n", ona, freq;
   if (!com_init)
-    COMInit(9600);
+    COMInit(BAUD_RATE);
   if (!Bt(&sys_semas[SEMA_MUTE],0) &&
 	!LBts(&sys_semas[SEMA_SND],0)) { //Mutex. Just throw-out if in use
     if (!ona) {
