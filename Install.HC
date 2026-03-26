@@ -6,8 +6,8 @@ Copy(kmisc_path, "/Kernel/KMisc.HC.Z");
 
 BootHDIns;
 
-"\nYou'll need to reboot your PC for changes to apply.\n";
-"Reboot now? ";
+"\nYou need to reboot your PC for changes to apply.\n";
+"Reboot now ";
 
 if (YorN)
   Reboot;
