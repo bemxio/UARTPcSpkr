@@ -20,7 +20,7 @@ void loop() {
 
   if (frequency == 0) {
     noTone(BUZZER_PIN); return;
-  } else if (frequency >= 31) {
+  } else {
     tone(BUZZER_PIN, frequency);
   }
 }
