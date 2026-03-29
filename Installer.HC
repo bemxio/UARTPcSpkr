@@ -1,12 +1,12 @@
 U0 Install()
 {
-  U8 *kmisc_path = DirNameAbs("KMisc.HC");
+  if (!FileFind("KMisc.HC")) {
+    "KMisc.HC not found. Exiting.\n"; return;
+  }
 
-  Drv(':');
-  Move("/Kernel/KMisc.HC.Z", "/Kernel/KMisc.BAK.Z");
-  Copy(kmisc_path, "/Kernel/KMisc.HC.Z");
-
-  BootHDIns;
+  Move("::/Kernel/KMisc.HC.Z", "::/Kernel/KMisc.BAK.Z");
+  Copy("KMisc.HC", "::/Kernel/KMisc.HC.Z");
+  BootHDIns(':');
 
   "\nYou need to reboot your PC for changes to apply.\n";
   "Reboot now ";
@@ -17,14 +17,12 @@ U0 Install()
 
 U0 Uninstall()
 {
-  Drv(':');
+  if (!FileFind("::/Kernel/KMisc.BAK.Z")) {
+    "KMisc.BAK.Z not found. Exiting.\n"; return;
+  }
 
-  if (FileFind("/Kernel/KMisc.BAK.Z"))
-    Move("/Kernel/KMisc.BAK.Z", "/Kernel/KMisc.HC.Z");
-  else
-    "/Kernel/KMisc.BAK.Z not found. You'll need to copy KMisc.HC.Z to /Kernel/ manually.\n"; throw;
-
-  BootHDIns;
+  Move("::/Kernel/KMisc.BAK.Z", "::/Kernel/KMisc.HC.Z");
+  BootHDIns(':');
 
   "\nYou need to reboot your PC for changes to apply.\n";
   "Reboot now ";
