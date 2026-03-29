@@ -207,6 +207,7 @@ U0 Snd(I8 ona=0)
     if (ona!=scrncast.ona) {
       scrncast.ona=ona;
       freq=Ona2Freq(ona);
+      OutU8(COM_PORT,0xB6);
       OutU8(COM_PORT,freq);
       OutU8(COM_PORT,freq.u8[1]);
       //"Snd: ona=%d, freq=%d\n", ona, freq;

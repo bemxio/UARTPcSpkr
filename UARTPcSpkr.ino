@@ -9,17 +9,19 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() < 2)
+  if (Serial.available() < 3)
     return;
 
-  frequency = Serial.read();
-  frequency |= Serial.read() << 8;
+  if (Serial.read() != 0xB6)
+    return;
+
+  frequency = Serial.read() | (Serial.read() << 8);
 
   //Serial.print("Received beep request! Frequency: ");
   //Serial.println(frequency);
 
   if (frequency == 0) {
-    noTone(BUZZER_PIN); return;
+    noTone(BUZZER_PIN);
   } else {
     tone(BUZZER_PIN, frequency);
   }
