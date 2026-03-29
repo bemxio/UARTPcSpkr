@@ -74,11 +74,6 @@ There are a couple of defines in both source files that you can modify:
     - `COM_PORT`: Serial port address used for the interface. Defaults to `0x3F8`, (standard I/O port for COM1).
     - `BAUD_RATE`: Baud rate for serial communication. Make sure it matches the one in `UARTPcSpkr.ino` and the `stty` command. Defaults to `115200`.
 
-## Limitations
-The interface seems to not handle noise that well, causing the Arduino to desync and receive incorrect frequency values. If that happens, simply press the reset button in order to restart the sketch.
-
-Could be alleviated by adding a prefix byte to the frequency value, ignoring any bytes received before it. Haven't tested that yet though. 
-
 ## Removal
 The [`Installer.HC`](Installer.HC) script also includes an `Uninstall` function that restores the original `KMisc.HC.Z` file from the `KMisc.BAK.Z` backup created during installation. To uninstall UARTPcSpkr, include the installer script and run the function:
 
@@ -86,6 +81,9 @@ The [`Installer.HC`](Installer.HC) script also includes an `Uninstall` function 
 #include "Installer";
 Uninstall;
 ```
+
+## Troubleshooting
+In case you run into any problems, feel free to create a new issue [here](https://github.com/bemxio/UARTPcSpkr/issues). I'll try my best to help you out as soon as possible.
 
 ## License
 This project is licensed under the MIT License - see the [`LICENSE`](LICENSE) file for details.
